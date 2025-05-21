@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quantum Computing Inc. - AFS Demo</title>
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <script src="https://cdn.plot.ly/plotly-2.27.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+  </head>
+  <body>
+    <header>
+      <a class="logo" href="/"><img src="../static/logo.svg" alt="logo" /></a>
+      <nav>
+        <ul class="nav_links">
+          <!-- <li>
+            <a href="/link1">Link 1</a>
+          </li>
+          <li class="nav_selected">
+            <a href="/link2">Link 2</a>
+          </li> -->
+        </ul>
+      </nav>
+      <a href="/contact" class="button-contact" style="font-weight: 400"
+        >Contact us</a
+      >
+    </header>
+
+    <h1 style="margin-left: 5%; margin-top: 24px; margin-bottom: 24px">
+      Contested logistics
+    </h1>
+
+    <!-- SELECTOR FREQ / DELAY -->
+    <section>
+      <div class="selector">
+        <div
+          role="button"
+          class="selector-button button-active"
+          onclick="changeContent('content1', this)"
+        >
+          Demo
+        </div>
+        <div
+          role="button"
+          class="selector-button"
+          onclick="changeContent('content2', this)"
+        >
+          About
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTESTED LOGISTICS -->
+    <section class="card-content active" id="content1">
+      <div class="card" style="margin-top: 0px; border-radius: 0px 8px 8px 8px">
+        <div id="live_demo_left">
+          <!-- Taking Data -->
+          <div style="min-height: 250px">
+            <h2 style="padding-bottom: 12px">Choose a scenario</h2>
+
+            <div class="scenario card" data-scenario="option1">
+              <h3>Scenario 1</h3>
+              <div>
+                <div class="ammo">Ammo: <span class="ammo-count">-</span></div>
+                <div class="food">Food: <span class="food-count">-</span></div>
+                <div class="fuel">Fuel: <span class="fuel-count">-</span></div>
+                <div class="tanks">
+                  Tanks: <span class="tank-count">-</span>
+                </div>
+                <div class="boats">
+                  Boats: <span class="boat-count">-</span>
+                </div>
+                <div class="planes">
+                  Planes: <span class="plane-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="scenario card" data-scenario="option2">
+              <h3>Scenario 2</h3>
+              <div>
+                <div class="ammo">Ammo: <span class="ammo-count">-</span></div>
+                <div class="food">Food: <span class="food-count">-</span></div>
+                <div class="fuel">Fuel: <span class="fuel-count">-</span></div>
+                <div class="tanks">
+                  Tanks: <span class="tank-count">-</span>
+                </div>
+                <div class="boats">
+                  Boats: <span class="boat-count">-</span>
+                </div>
+                <div class="planes">
+                  Planes: <span class="plane-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="scenario card" data-scenario="option3">
+              <h3>Scenario 3</h3>
+              <div>
+                <div class="ammo">Ammo: <span class="ammo-count">-</span></div>
+                <div class="food">Food: <span class="food-count">-</span></div>
+                <div class="fuel">Fuel: <span class="fuel-count">-</span></div>
+                <div class="tanks">
+                  Tanks: <span class="tank-count">-</span>
+                </div>
+                <div class="boats">
+                  Boats: <span class="boat-count">-</span>
+                </div>
+                <div class="planes">
+                  Planes: <span class="plane-count">-</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="buttons_div">
+              <!-- <select id="scenarioSelector">
+                <option value="option1">Scenario 1</option>
+                <option value="option2">Scenario 2</option>
+                <option value="option3">Scenario 3</option>
+              </select> -->
+              <!-- 
+              <button class="button2" id="submitBtn">Submit from JSON</button> -->
+
+              <button class="button" id="animateBtn">Start simulation</button>
+              <button
+                class="button2"
+                style="margin-top: 8px"
+                id="continue-button"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="map"></div>
+
+        <!-- PLOTS APPEAR HERE -->
+        <!-- <div
+          id="live_demo_right map"
+          class="chart"
+          style="width: auto; height: auto; display: flex"
+        >
+          <div class="loader" style="max-height: 50px"></div>
+
+          <div id="run_history" style="width: 100%"></div>
+        </div> -->
+      </div>
+    </section>
+
+    <!-- DELAY SCAN PLOT -->
+    <section class="card-content" id="content2">
+      <div class="card" style="margin-top: 0px; border-radius: 0px 8px 8px 8px">
+        <div id="live_demo_left">
+          <!-- Find Target -->
+          <div style="min-height: 250px">
+            <h1 style="color: 211D53; margin-bottom: 12px">Delay scan</h1>
+
+            <!-- OPTION: COM Port -->
+            <div class="options">
+              <label class="options" for="com_port_delay_scan">
+                <span style="font-weight: 600">Step 1.</span> COM port
+              </label>
+              <input type="text" value="COM3" id="com_port_delay_scan" />
+            </div>
+
+            <!-- OPTION: Min Value -->
+            <div class="options">
+              <label class="options" for="d_min">
+                <span style="font-weight: 600">Step 2.</span> Start delay (ns)
+              </label>
+              <input type="number" value="8" id="d_min" />
+            </div>
+
+            <!-- OPTION: Max Value -->
+            <div class="options">
+              <label class="options" for="d_max">
+                <span style="font-weight: 600">Step 3.</span> End delay (ns)
+              </label>
+              <input type="number" value="12" id="d_max" />
+            </div>
+
+            <!-- OPTION: Skip Value -->
+            <div class="options">
+              <label class="options" for="d_int">
+                <span style="font-weight: 600">Step 4.</span> Skip value (ns)
+              </label>
+              <input type="number" value="0.2" id="d_int" />
+            </div>
+
+            <!-- OPTION: Acquisition time -->
+            <div class="options">
+              <label class="options" for="acquisition_delay">
+                <span style="font-weight: 600">Step 5.</span> Acquisition time
+                (s)
+              </label>
+              <input type="number" min="0.1" value="1" id="acquisition_delay" />
+            </div>
+
+            <div class="buttons_div">
+              <button class="button" onclick="runFindTarget()">
+                Start run
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DELAY SCAN APPEAR HERE -->
+        <div
+          id="live_demo_right"
+          class="chart"
+          style="width: auto; height: auto; display: flex"
+        >
+          <div class="loader" style="max-height: 50px"></div>
+          <div id="plot_area_delay"></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div>
+        © Copyright 2018-2025 Quantum Computing Inc. All rights reserved.
+      </div>
+    </footer>
+
+    <!-- SCRIPTS -->
+
+    <!-- LEAFLET -->
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
+
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        const hasStoredRuns = storedPlots.length > 0;
+        const showRunsBtn = document.querySelector(
+          'button[onclick="showAllRuns()"]'
+        );
+        if (!hasStoredRuns && showRunsBtn) {
+          showRunsBtn.style.display = "none";
+        }
+      });
+
+      // CODE FOR MAP LEAFLET
+
+      var map = L.map("map", {
+        crs: L.CRS.Simple,
+        attributionControl: false,
+      });
+
+      var bounds = [
+        [0, 0],
+        [600, 1096],
+      ];
+
+      // var center = [600 / 2, 1096 / 2];
+      // map.setView(center, 1);
+
+      var image = L.imageOverlay("./static/map.svg", bounds).addTo(map);
+
+      map.fitBounds(bounds);
+      // map.setZoom(map.getZoom() + 1); // Zoom in one level
+
+      // SET MAX BOUNDS
+      map.setMaxBounds([
+        [-50, -50],
+        [650, 1146],
+      ]);
+
+      // ICONS
+
+      var street = {
+        icon: L.icon({
+          iconUrl: "./static/street.svg",
+          iconSize: [40, 40],
+        }),
+        title: "Street",
+      };
+      var conflict = {
+        icon: L.icon({
+          iconUrl: "./static/conflict.svg",
+          iconSize: [33, 33],
+        }),
+        title: "Conflict",
+      };
+      var rendezvous = {
+        icon: L.icon({
+          iconUrl: "./static/rendezvous.svg",
+          iconSize: [16, 21],
+        }),
+        title: "Rendezvous",
+      };
+      var port = {
+        icon: L.icon({
+          iconUrl: "./static/port.svg",
+          iconSize: [26, 26],
+        }),
+        title: "Port",
+      };
+      var tank = {
+        icon: L.icon({
+          iconUrl: "./static/tank.svg",
+          iconSize: [23, 12],
+        }),
+        title: "Tank",
+      };
+      var plane = {
+        icon: L.icon({
+          iconUrl: "./static/plane.svg",
+          iconSize: [20, 22],
+        }),
+        title: "plane",
+      };
+      var boat = {
+        icon: L.icon({
+          iconUrl: "./static/boat.svg",
+          iconSize: [46, 13],
+        }),
+        title: "boat",
+      };
+
+      const unit_type = { tank, plane, boat };
+
+      // Locations
+      const street1 = [358, 805];
+      const street2 = [217, 733];
+      const port1 = [150, 631];
+      const port2 = [365, 456];
+      const port3 = [298, 197];
+      const port4 = [151, 360];
+      const rendezvous1 = [231, 536];
+      const rendezvous2 = [269, 324];
+      const conflict1 = [450, 624];
+      const conflict2 = [427, 444];
+      const conflict3 = [344, 285];
+
+      // Place markers
+      var marker = L.marker([358, 805], street)
+        .addTo(map)
+        .bindPopup("Street 1");
+      var marker = L.marker([217, 733], street)
+        .addTo(map)
+        .bindPopup("Street 2");
+      var marker = L.marker([150, 631], port).addTo(map).bindPopup("Port 1");
+      var marker = L.marker([365, 456], port).addTo(map).bindPopup("Port 2");
+      var marker = L.marker([298, 197], port).addTo(map).bindPopup("Port 3");
+      var marker = L.marker([151, 360], port).addTo(map).bindPopup("Port 4");
+      var marker = L.marker([231, 536], rendezvous)
+        .addTo(map)
+        .bindPopup("Rendezvous 1");
+      var marker = L.marker([269, 324], rendezvous)
+        .addTo(map)
+        .bindPopup("Rendezvous 2");
+      var marker = L.marker([450, 624], conflict)
+        .addTo(map)
+        .bindPopup("Conflict 1");
+      var marker = L.marker([427, 444], conflict)
+        .addTo(map)
+        .bindPopup("Conflict 2");
+      var marker = L.marker([344, 285], conflict)
+        .addTo(map)
+        .bindPopup("Conflict 3");
+
+      function createPopupContent(vehicle) {
+        return `
+              <div style="padding-bottom: 6px">
+                <img src="./static/ammo.png" style="width: 22px; height: 32px; vertical-align: middle">
+                <span style="font-size: 16px; font-weight: 600">: ${vehicle.ammo}</span>
+              </div>
+              <div style="padding-bottom: 6px">
+                <img src="./static/food.png" style="width: 22px; height: 28px; vertical-align: middle">
+                <span style="font-size: 16px; font-weight: 600">: ${vehicle.food}</span>
+              </div>
+              <div>
+                <img src="./static/fuel.png" style="width: 22px; height: 25px; vertical-align: middle">
+                <span style="font-size: 16px; font-weight: 600">: ${vehicle.fuel}</span>
+              </div>`;
+      }
+
+      // VEHICLES ON ROUTES
+      const vehicleMarkers = []; // clear this when loading new data
+      let selectedScenario = null;
+      document.querySelectorAll(".scenario").forEach((card) => {
+        card.addEventListener("click", async () => {
+          selectedScenario = card.dataset.scenario;
+          // Visually show selected card
+          document
+            .querySelectorAll(".scenario")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+
+          const scenario = card.dataset.scenario;
+          const res = await fetch(`/api/routes?scenario=${scenario}`);
+          const vehicles = await res.json();
+          let ammo = 0;
+          let fuel = 0;
+          let food = 0;
+          let tankCount = 0;
+          let boatCount = 0;
+          let planeCount = 0;
+
+          // Clear old vehicles from map
+          vehicleMarkers.forEach(({ marker, polyline }) => {
+            map.removeLayer(marker);
+            map.removeLayer(polyline);
+          });
+          vehicleMarkers.length = 0;
+
+          // Render new routes and vehicles
+          vehicles.forEach((vehicle) => {
+            ammo += vehicle.ammo;
+            food += vehicle.food;
+            fuel += vehicle.fuel;
+
+            if (vehicle.type === "tank") tankCount++;
+            if (vehicle.type === "boat") boatCount++;
+            if (vehicle.type === "plane") planeCount++;
+
+            const latLngRoute = vehicle.route.map(([lat, lng]) =>
+              L.latLng(lat, lng)
+            );
+
+            const polyline = L.polyline(latLngRoute, {
+              color: "white",
+              weight: 3,
+              dashArray: "3, 7",
+            }).addTo(map);
+
+            const marker = L.marker(getPositionAtFraction(polyline, 0.1), {
+              icon: unit_type[vehicle.type].icon,
+              zIndexOffset: 1000,
+            }).addTo(map);
+
+            marker.bindPopup(createPopupContent(vehicle));
+            // ADD POPUP HERE
+            marker.on("mouseover", function () {
+              this.openPopup();
+            });
+            // marker.on("mouseout", function () {
+            //   this.closePopup();
+            // });
+
+            vehicleMarkers.push({ marker, polyline });
+            const ammoEl = card.querySelector(".ammo-count");
+            const foodEl = card.querySelector(".food-count");
+            const fuelEl = card.querySelector(".fuel-count");
+            const tankEl = card.querySelector(".tank-count");
+            const boatEl = card.querySelector(".boat-count");
+            const planeEl = card.querySelector(".plane-count");
+
+            if (ammoEl && foodEl && fuelEl) {
+              ammoEl.textContent = ammo;
+              foodEl.textContent = food;
+              fuelEl.textContent = fuel;
+              tankEl.textContent = tankCount;
+              boatEl.textContent = boatCount;
+              planeEl.textContent = planeCount;
+            }
+          });
+        });
+      });
+
+      // Animate Button
+      document
+        .getElementById("animateBtn")
+        .addEventListener("click", async () => {
+          if (!selectedScenario) {
+            alert("Please select a scenario first.");
+            return;
+          }
+
+          vehicleMarkers.forEach(({ marker, polyline }) => {
+            animateAlongPolyline(polyline.getLatLngs(), marker);
+            if (marker && marker.bringToFront) {
+              marker.bringToFront();
+            }
+          });
+
+          // BEGIN LOGIC TO SEND TO BACKEND
+
+          const res = await fetch("/api/animate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ scenario: selectedScenario }),
+          });
+          const result = await res.json();
+          document.getElementById("continue-button").disabled = false;
+        });
+
+      // Continue Button
+      document
+        .getElementById("continue-button")
+        .addEventListener("click", async () => {
+          const res = await fetch("/api/new-scenarios");
+          const scenarios = await res.json();
+
+          // Now update the UI with new scenario data.
+          // You’ll need to write the logic to update the HTML of the 3 `.scenario` cards.
+          // For example:
+          scenarios.forEach((data, i) => {
+            const card = document.querySelectorAll(".scenario")[i];
+            card.querySelector(".ammo-count").textContent = data.ammo;
+            card.querySelector(".food-count").textContent = data.food;
+            card.querySelector(".fuel-count").textContent = data.fuel;
+            card.querySelector(".tank-count").textContent = data.tanks;
+            card.querySelector(".boat-count").textContent = data.boats;
+            card.querySelector(".plane-count").textContent = data.planes;
+            card.dataset.scenario = data.scenarioId; // update scenario id
+          });
+
+          // Reset state
+          selectedScenario = null;
+          document
+            .querySelectorAll(".scenario")
+            .forEach((c) => c.classList.remove("selected"));
+          document.getElementById("continue-button").disabled = true;
+        });
+
+      // FUNCTION TO ANIMATE ALONG THE PATH
+
+      function getPositionAtFraction(route, fraction) {
+        const latlngs = route.getLatLngs();
+        const index = Math.floor((latlngs.length - 1) * fraction);
+        const start = latlngs[index];
+        const end = latlngs[index + 1];
+        const lat =
+          start.lat +
+          (end.lat - start.lat) * ((fraction * (latlngs.length - 1)) % 1);
+        const lng =
+          start.lng +
+          (end.lng - start.lng) * ((fraction * (latlngs.length - 1)) % 1);
+        return [lat, lng];
+      }
+
+      function animateAlongPolyline(
+        latlngs,
+        marker,
+        speed = 20,
+        stepsPerSegment = 100
+      ) {
+        let segment = 0;
+
+        function moveToNextSegment() {
+          if (segment >= latlngs.length - 1) return;
+
+          const start = latlngs[segment];
+          const end = latlngs[segment + 1];
+
+          let step = 0;
+          const latDiff = (end.lat - start.lat) / stepsPerSegment;
+          const lngDiff = (end.lng - start.lng) / stepsPerSegment;
+
+          const interval = setInterval(() => {
+            if (step >= stepsPerSegment) {
+              clearInterval(interval);
+              segment++;
+              moveToNextSegment();
+            } else {
+              const lat = start.lat + latDiff * step;
+              const lng = start.lng + lngDiff * step;
+              marker.setLatLng([lat, lng]);
+              step++;
+            }
+          }, speed);
+        }
+
+        moveToNextSegment();
+      }
+
+      // const planeStart = getPositionAtFraction(polyline1, 0.1);
+      // const tankStart = getPositionAtFraction(polyline2, 0.1);
+      // const boatStart = getPositionAtFraction(polyline3, 0.1);
+
+      // const tankMarker = L.marker(getPositionAtFraction(tank1.route, 0.1), {
+      //   icon: unit_type[tank1.type].icon,
+      //   zIndexOffset: 1000,
+      // })
+      //   .addTo(map)
+      //   .bindPopup(createPopupContent(tank1));
+
+      // const planeMarker = L.marker(getPositionAtFraction(plane1.route, 0.1), {
+      //   icon: unit_type[plane1.type].icon,
+      //   zIndexOffset: 1000,
+      // })
+      //   .addTo(map)
+      //   .bindPopup(createPopupContent(plane1));
+
+      // const boatMarker = L.marker(getPositionAtFraction(boat1.route, 0.1), {
+      //   icon: unit_type[boat1.type].icon,
+      //   zIndexOffset: 1000,
+      // })
+      //   .addTo(map)
+      //   .bindPopup(createPopupContent(boat1));
+
+      // function startAnimation() {
+      //   animateAlongPolyline(plane1.route.getLatLngs(), planeMarker);
+      //   animateAlongPolyline(tank1.route.getLatLngs(), tankMarker);
+      //   animateAlongPolyline(boat1.route.getLatLngs(), boatMarker);
+
+      //   tankMarker.bringToFront();
+      //   boatMarker.bringToFront();
+      //   planeMarker.bringToFront();
+      // }
+
+      // Popup when clicking map
+
+      // var popup = L.popup();
+
+      // function onMapClick(e) {
+      //   popup
+      //     .setLatLng(e.latlng)
+      //     .setContent("You clicked the map at " + e.latlng.toString())
+      //     .openOn(map);
+      // }
+
+      // map.on("click", onMapClick);
+
+      // END OF LEAFLET CODE //
+
+      // Change Content
+      async function changeContent(contentId, div) {
+        const contents = document.querySelectorAll(".card-content");
+        contents.forEach((content) => {
+          if (content.id === contentId) {
+            content.classList.add("active");
+          } else {
+            content.classList.remove("active");
+          }
+        });
+
+        // Remove 'button-active' class from all selector divs
+        const divs = document.querySelectorAll(".selector-button");
+        divs.forEach((divElement) =>
+          divElement.classList.remove("button-active")
+        );
+
+        // Add 'button-active' class to the clicked div
+        div.classList.add("button-active");
+      }
+    </script>
+  </body>
+</html>
