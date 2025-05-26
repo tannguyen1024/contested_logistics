@@ -5,7 +5,7 @@
 /* MAP */
 
 #map {
-  height: 75vh;
+  height: 100%;
   width: auto;
   border-radius: 8px;
 }
@@ -15,7 +15,9 @@
 }
 
 .leaflet-container {
-  background-color: #e8ecf2 !important;;
+  background-color: #94c5e8 !important;
+  border-radius: 8px;
+  box-shadow: 0px 4px 4px 0 rgba(33, 29, 83, 0.25);
 }
 
 * {
