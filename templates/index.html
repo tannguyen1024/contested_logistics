@@ -599,6 +599,8 @@
       document
         .getElementById("reset-button")
         .addEventListener("click", async () => {
+          document.getElementById("animateBtn").style.display = "inline-block";
+          document.getElementById("continue-button").style.display = "none";
           try {
             const res = await fetch("/api/reset", {
               method: "POST",
