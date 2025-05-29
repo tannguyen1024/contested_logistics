@@ -5,19 +5,9 @@ from flask import (
     Response,
     jsonify,
 )
+import math
 
-app = Flask(__name__)
-street1 = [358, 805]
-street2 = [217, 733]
-port1 = [150, 631]
-port2 = [365, 456]
-port3 = [298, 197]
-port4 = [151, 360]
-rendezvous1 = [231, 536]
-rendezvous2 = [269, 324]
-conflict1 = [450, 624]
-conflict2 = [427, 444]
-conflict3 = [344, 285]
+app = Flask(__name__, static_folder="static")
 
 
 # HOME PAGE
@@ -26,7 +16,6 @@ def index():
     return render_template("index.html")
 
 
-# RETURN HARDCODED JSON
 @app.route("/api/routes")
 def get_routes():
     scenario = request.args.get("scenario", "default")
@@ -34,63 +23,104 @@ def get_routes():
     if scenario == "option1":
         data = [
             {
-                "type": "plane",
-                "ammo": 4,
-                "food": 2,
-                "fuel": 5,
-                "route": [[358, 805], [450, 624], [231, 536], [151, 360]],
-            },
-            {
-                "type": "boat",
+                "type": "tank",
                 "ammo": 2,
                 "food": 1,
-                "fuel": 6,
-                "route": [[358, 805], [217, 733], [150, 631]],
+                "fuel": 1,
+                "route": [[449, 237], [426, 381]],
             },
             {
                 "type": "tank",
                 "ammo": 1,
-                "food": 2,
-                "fuel": 2,
-                "route": [[358, 805], [365, 456], [269, 324], [298, 197]],
+                "food": 1,
+                "fuel": 3,
+                "route": [[449, 237], [309, 238]],
             },
         ]
     elif scenario == "option2":
         data = [
             {
-                "type": "plane",
+                "type": "boat",
                 "ammo": 3,
                 "food": 7,
                 "fuel": 2,
-                "route": [street1, [450, 624], conflict2, [151, 360]],
+                "route": [[235, 278], [269, 324]],
             },
             {
                 "type": "plane",
-                "ammo": 5,
+                "ammo": 1,
                 "food": 3,
+                "fuel": 1,
+                "route": [[217, 733], [160, 623]],
+            },
+            {
+                "type": "plane",
+                "ammo": 3,
+                "food": 6,
                 "fuel": 2,
-                "route": [[358, 805], [217, 733], [150, 631]],
+                "route": [[383, 605], [241, 546]],
             },
         ]
     elif scenario == "option3":
         data = [
             {
-                "type": "plane",
-                "ammo": 8,
-                "food": 7,
-                "fuel": 2,
-                "route": [port3, conflict3, conflict2, conflict1, street1],
+                "type": "tank",
+                "ammo": 2,
+                "food": 3,
+                "fuel": 3,
+                "route": [[383, 605], [426, 381]],
             },
             {
                 "type": "boat",
-                "ammo": 1,
+                "ammo": 3,
+                "food": 2,
+                "fuel": 1,
+                "route": [[217, 733], [241, 546]],
+            },
+            {
+                "type": "plane",
+                "ammo": 3,
                 "food": 2,
                 "fuel": 2,
-                "route": [street2, [365, 456], [269, 324], port4],
+                "route": [[449, 237], [269, 324]],
             },
         ]
 
     return jsonify(data)
+
+
+# ADD NODES / VERTICES
+def distance(p1, p2):
+    return math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
+
+
+@app.route("/api/nodes")
+def get_points():
+    nodes = [
+        {"coords": [449, 237], "type": "airstrip", "label": "Airstrip 1"},
+        {"coords": [217, 733], "type": "airstrip", "label": "Airstrip 2"},
+        {"coords": [383, 605], "type": "airstrip", "label": "Airstrip 3"},
+        {"coords": [160, 623], "type": "port", "label": "Port 1"},
+        {"coords": [235, 278], "type": "port", "label": "Port 2"},
+        {"coords": [309, 238], "type": "port", "label": "Port 3"},
+        {"coords": [195, 392], "type": "port", "label": "Port 4"},
+        {"coords": [241, 546], "type": "rendezvous", "label": "Rendezvous 1"},
+        {"coords": [269, 324], "type": "rendezvous", "label": "Rendezvous 2"},
+        {"coords": [426, 381], "type": "conflict", "label": "Conflict 1"},
+        {"coords": [342, 794], "type": "conflict", "label": "Conflict 2"},
+        {"coords": [145, 530], "type": "conflict", "label": "Conflict 3"},
+        {"coords": [160, 297], "type": "conflict", "label": "Conflict 4"},
+    ]
+
+    threshold = 250  # minimum edge distance by pixel between two nodes
+    edges = []
+
+    for i in range(len(nodes)):
+        for j in range(i + 1, len(nodes)):
+            if distance(nodes[i]["coords"], nodes[j]["coords"]) <= threshold:
+                edges.append({"from": nodes[i]["coords"], "to": nodes[j]["coords"]})
+
+    return jsonify({"nodes": nodes, "edges": edges})
 
 
 # @app.route("/api/all_routes")

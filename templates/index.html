@@ -174,16 +174,6 @@
     <script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
 
     <script>
-      window.addEventListener("DOMContentLoaded", () => {
-        const hasStoredRuns = storedPlots.length > 0;
-        const showRunsBtn = document.querySelector(
-          'button[onclick="showAllRuns()"]'
-        );
-        if (!hasStoredRuns && showRunsBtn) {
-          showRunsBtn.style.display = "none";
-        }
-      });
-
       // CODE FOR MAP LEAFLET
 
       var map = L.map("map", {
@@ -212,97 +202,65 @@
 
       // ICONS
 
-      var street = {
+      var airstrip = {
         icon: L.icon({
-          iconUrl: "./static/street.svg",
+          iconUrl: "/static/airstrip.svg",
           iconSize: [40, 40],
         }),
-        title: "Street",
+        title: "Airstrip",
       };
       var conflict = {
         icon: L.icon({
-          iconUrl: "./static/conflict.svg",
+          iconUrl: "/static/conflict.svg",
           iconSize: [33, 33],
         }),
         title: "Conflict",
       };
       var rendezvous = {
         icon: L.icon({
-          iconUrl: "./static/rendezvous.svg",
+          iconUrl: "/static/rendezvous.svg",
           iconSize: [16, 21],
         }),
         title: "Rendezvous",
       };
       var port = {
         icon: L.icon({
-          iconUrl: "./static/port.svg",
+          iconUrl: "/static/port.svg",
           iconSize: [26, 26],
         }),
         title: "Port",
       };
       var tank = {
         icon: L.icon({
-          iconUrl: "./static/tank.svg",
+          iconUrl: "/static/tank.svg",
           iconSize: [23, 12],
         }),
         title: "Tank",
       };
       var plane = {
         icon: L.icon({
-          iconUrl: "./static/plane.svg",
+          iconUrl: "/static/plane.svg",
           iconSize: [20, 22],
         }),
         title: "plane",
       };
       var boat = {
         icon: L.icon({
-          iconUrl: "./static/boat.svg",
+          iconUrl: "/static/boat.svg",
           iconSize: [46, 13],
         }),
         title: "boat",
       };
 
-      const unit_type = { tank, plane, boat };
-
-      // Locations
-      const street1 = [358, 805];
-      const street2 = [217, 733];
-      const port1 = [150, 631];
-      const port2 = [365, 456];
-      const port3 = [298, 197];
-      const port4 = [151, 360];
-      const rendezvous1 = [231, 536];
-      const rendezvous2 = [269, 324];
-      const conflict1 = [450, 624];
-      const conflict2 = [427, 444];
-      const conflict3 = [344, 285];
-
-      // Place markers
-      var marker = L.marker([358, 805], street)
-        .addTo(map)
-        .bindPopup("Street 1");
-      var marker = L.marker([217, 733], street)
-        .addTo(map)
-        .bindPopup("Street 2");
-      var marker = L.marker([150, 631], port).addTo(map).bindPopup("Port 1");
-      var marker = L.marker([365, 456], port).addTo(map).bindPopup("Port 2");
-      var marker = L.marker([298, 197], port).addTo(map).bindPopup("Port 3");
-      var marker = L.marker([151, 360], port).addTo(map).bindPopup("Port 4");
-      var marker = L.marker([231, 536], rendezvous)
-        .addTo(map)
-        .bindPopup("Rendezvous 1");
-      var marker = L.marker([269, 324], rendezvous)
-        .addTo(map)
-        .bindPopup("Rendezvous 2");
-      var marker = L.marker([450, 624], conflict)
-        .addTo(map)
-        .bindPopup("Conflict 1");
-      var marker = L.marker([427, 444], conflict)
-        .addTo(map)
-        .bindPopup("Conflict 2");
-      var marker = L.marker([344, 285], conflict)
-        .addTo(map)
-        .bindPopup("Conflict 3");
+      const unit_type = {
+        tank,
+        plane,
+        boat,
+        airstrip,
+        rendezvous,
+        conflict,
+        port,
+      };
 
       function createPopupContent(vehicle) {
         return `
@@ -364,8 +322,8 @@
             );
 
             const polyline = L.polyline(latLngRoute, {
-              color: "white",
-              weight: 3,
+              color: "blue",
+              weight: 4,
               dashArray: "3, 7",
             }).addTo(map);
 
@@ -439,9 +397,6 @@
           const res = await fetch("/api/new-scenarios");
           const scenarios = await res.json();
 
-          // Now update the UI with new scenario data.
-          // You’ll need to write the logic to update the HTML of the 3 `.scenario` cards.
-          // For example:
           scenarios.forEach((data, i) => {
             const card = document.querySelectorAll(".scenario")[i];
             card.querySelector(".ammo-count").textContent = data.ammo;
@@ -450,10 +405,9 @@
             card.querySelector(".tank-count").textContent = data.tanks;
             card.querySelector(".boat-count").textContent = data.boats;
             card.querySelector(".plane-count").textContent = data.planes;
-            card.dataset.scenario = data.scenarioId; // update scenario id
+            card.dataset.scenario = data.scenarioId;
           });
 
-          // Reset state
           selectedScenario = null;
           document
             .querySelectorAll(".scenario")
@@ -512,53 +466,18 @@
         moveToNextSegment();
       }
 
-      // const planeStart = getPositionAtFraction(polyline1, 0.1);
-      // const tankStart = getPositionAtFraction(polyline2, 0.1);
-      // const boatStart = getPositionAtFraction(polyline3, 0.1);
-
-      // const tankMarker = L.marker(getPositionAtFraction(tank1.route, 0.1), {
-      //   icon: unit_type[tank1.type].icon,
-      //   zIndexOffset: 1000,
-      // })
-      //   .addTo(map)
-      //   .bindPopup(createPopupContent(tank1));
-
-      // const planeMarker = L.marker(getPositionAtFraction(plane1.route, 0.1), {
-      //   icon: unit_type[plane1.type].icon,
-      //   zIndexOffset: 1000,
-      // })
-      //   .addTo(map)
-      //   .bindPopup(createPopupContent(plane1));
-
-      // const boatMarker = L.marker(getPositionAtFraction(boat1.route, 0.1), {
-      //   icon: unit_type[boat1.type].icon,
-      //   zIndexOffset: 1000,
-      // })
-      //   .addTo(map)
-      //   .bindPopup(createPopupContent(boat1));
-
-      // function startAnimation() {
-      //   animateAlongPolyline(plane1.route.getLatLngs(), planeMarker);
-      //   animateAlongPolyline(tank1.route.getLatLngs(), tankMarker);
-      //   animateAlongPolyline(boat1.route.getLatLngs(), boatMarker);
-
-      //   tankMarker.bringToFront();
-      //   boatMarker.bringToFront();
-      //   planeMarker.bringToFront();
-      // }
-
       // Popup when clicking map
 
-      // var popup = L.popup();
+      var popup = L.popup();
 
-      // function onMapClick(e) {
-      //   popup
-      //     .setLatLng(e.latlng)
-      //     .setContent("You clicked the map at " + e.latlng.toString())
-      //     .openOn(map);
-      // }
+      function onMapClick(e) {
+        popup
+          .setLatLng(e.latlng)
+          .setContent("You clicked the map at " + e.latlng.toString())
+          .openOn(map);
+      }
 
-      // map.on("click", onMapClick);
+      map.on("click", onMapClick);
 
       // END OF LEAFLET CODE //
 
@@ -582,6 +501,26 @@
         // Add 'button-active' class to the clicked div
         div.classList.add("button-active");
       }
+
+      window.addEventListener("DOMContentLoaded", () => {fetch("/api/nodes")
+  .then((res) => res.json())
+  .then((data) => {
+    data.nodes.forEach((p) => {
+      L.marker(p.coords, { ...unit_type[p.type] })
+        .addTo(map)
+        .bindPopup(p.label);
+    });
+
+    data.edges.forEach((edge) => {
+      L.polyline([edge.from, edge.to], {
+        color: "white",
+        weight: 2,
+        opacity: 1,
+        dashArray: "4, 6",
+      }).addTo(map);
+    });
+  });
+});
     </script>
   </body>
 </html>
