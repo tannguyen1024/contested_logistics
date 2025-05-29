@@ -133,6 +133,9 @@
               >
                 Continue
               </button>
+              <button class="button2" style="margin-top: 8px" id="reset-button">
+                Reset
+              </button>
             </div>
           </div>
         </div>
@@ -166,6 +169,8 @@
 
     <script>
       // CODE FOR SCENARIO TOGGLE
+      document.getElementById("continue-button").style.display = "none";
+
       function setScenarioSelectionEnabled(enabled) {
         document.querySelectorAll(".scenario").forEach((card) => {
           if (enabled) {
@@ -173,30 +178,25 @@
             card.style.opacity = "1";
           } else {
             card.style.pointerEvents = "none";
-            card.style.opacity = "0.6"; // visually show disabled
+            card.style.opacity = "0.6";
           }
         });
       }
 
-      // Initially enabled
       setScenarioSelectionEnabled(true);
 
-      // Update scenario click handler to do nothing if disabled:
       document.querySelectorAll(".scenario").forEach((card) => {
         card.addEventListener("click", async () => {
-          if (card.style.pointerEvents === "none") return; // ignore click if disabled
+          if (card.style.pointerEvents === "none") return;
 
           selectedScenario = card.dataset.scenario;
           document
             .querySelectorAll(".scenario")
             .forEach((c) => c.classList.remove("selected"));
           card.classList.add("selected");
-
-          // ... rest of your existing code ...
         });
       });
 
-      // Start Simulation button disables scenario selection:
       document
         .getElementById("animateBtn")
         .addEventListener("click", async () => {
@@ -204,20 +204,21 @@
             alert("Please select a scenario first.");
             return;
           }
+          setScenarioSelectionEnabled(false);
+          document.getElementById("continue-button").style.display =
+            "inline-block";
+          document.getElementById("animateBtn").style.display = "none";
 
-          setScenarioSelectionEnabled(false); // disable scenario selection
-
-          // ... rest of your existing code ...
+          vehicleMarkers.forEach(({ marker, polyline }) => {
+            animateAlongPolyline(polyline.getLatLngs(), marker);
+            if (marker && marker.bringToFront) {
+              marker.bringToFront();
+            }
+          });
+          const result = await res.json();
+          document.getElementById("continue-button").disabled = false;
         });
 
-      // Continue button re-enables scenario selection:
-      document
-        .getElementById("continue-button")
-        .addEventListener("click", async () => {
-          // Your existing code...
-
-          setScenarioSelectionEnabled(true); // re-enable scenario selection
-        });
       // CODE FOR MAP LEAFLET
 
       var map = L.map("map", {
@@ -405,35 +406,6 @@
         });
       });
 
-      // Animate Button
-      document
-        .getElementById("animateBtn")
-        .addEventListener("click", async () => {
-          if (!selectedScenario) {
-            alert("Please select a scenario first.");
-            return;
-          }
-
-          vehicleMarkers.forEach(({ marker, polyline }) => {
-            animateAlongPolyline(polyline.getLatLngs(), marker);
-            if (marker && marker.bringToFront) {
-              marker.bringToFront();
-            }
-          });
-
-          // BEGIN LOGIC TO SEND TO BACKEND
-
-          const res = await fetch("/api/animate", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ scenario: selectedScenario }),
-          });
-          const result = await res.json();
-          document.getElementById("continue-button").disabled = false;
-        });
-
       // FUNCTION TO ANIMATE ALONG THE PATH
 
       function getPositionAtFraction(route, fraction) {
@@ -453,8 +425,8 @@
       function animateAlongPolyline(
         latlngs,
         marker,
-        speed = 20,
-        stepsPerSegment = 100
+        speed = 15,
+        stepsPerSegment = 50
       ) {
         let segment = 0;
 
@@ -487,16 +459,32 @@
 
       // Popup when clicking map
 
-      var popup = L.popup();
+      // var popup = L.popup();
 
-      function onMapClick(e) {
-        popup
-          .setLatLng(e.latlng)
-          .setContent("You clicked the map at " + e.latlng.toString())
-          .openOn(map);
+      // function onMapClick(e) {
+      //   popup
+      //     .setLatLng(e.latlng)
+      //     .setContent("You clicked the map at " + e.latlng.toString())
+      //     .openOn(map);
+      // }
+
+      // map.on("click", onMapClick);
+
+      function clearVehiclesFromMap() {
+        vehicleMarkers.forEach(({ marker, polyline }) => {
+          map.removeLayer(marker);
+          map.removeLayer(polyline);
+        });
+        vehicleMarkers.length = 0;
+        document.querySelectorAll(".scenario").forEach((card) => {
+          card.querySelector(".ammo-count").textContent = "-";
+          card.querySelector(".food-count").textContent = "-";
+          card.querySelector(".fuel-count").textContent = "-";
+          card.querySelector(".tank-count").textContent = "-";
+          card.querySelector(".boat-count").textContent = "-";
+          card.querySelector(".plane-count").textContent = "-";
+        });
       }
-
-      map.on("click", onMapClick);
 
       // END OF LEAFLET CODE //
 
@@ -569,34 +557,71 @@
           .catch((err) => console.error("Error fetching points:", err));
       });
 
-      // Continue Button
       document
         .getElementById("continue-button")
         .addEventListener("click", async () => {
+          document.getElementById("animateBtn").style.display = "inline-block";
+          document.getElementById("continue-button").style.display = "none";
+          setScenarioSelectionEnabled(true);
+          clearVehiclesFromMap();
+
+          // Find the selected scenario card
+          const selectedCard = document.querySelector(".scenario.selected");
+          if (!selectedCard) {
+            alert("Please select a scenario before continuing.");
+            return;
+          }
+
+          const selectedScenarioId = selectedCard.dataset.scenario;
+
+          // Send the selected scenario to backend
+          await fetch("/api/continue", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ selectedScenario: selectedScenarioId }),
+          });
+
+          // Then fetch updated nodes and scenarios as before
           fetch("/api/nodes")
             .then((res) => res.json())
             .then((data) => {
               syncMarkersAndEdges(data);
             });
-          const res = await fetch("/api/new-scenarios");
-          const scenarios = await res.json();
-
-          scenarios.forEach((data, i) => {
-            const card = document.querySelectorAll(".scenario")[i];
-            card.querySelector(".ammo-count").textContent = data.ammo;
-            card.querySelector(".food-count").textContent = data.food;
-            card.querySelector(".fuel-count").textContent = data.fuel;
-            card.querySelector(".tank-count").textContent = data.tanks;
-            card.querySelector(".boat-count").textContent = data.boats;
-            card.querySelector(".plane-count").textContent = data.planes;
-            card.dataset.scenario = data.scenarioId;
-          });
 
           selectedScenario = null;
           document
             .querySelectorAll(".scenario")
             .forEach((c) => c.classList.remove("selected"));
           document.getElementById("continue-button").disabled = true;
+        });
+
+      // RESET BUTTON
+      document
+        .getElementById("reset-button")
+        .addEventListener("click", async () => {
+          try {
+            const res = await fetch("/api/reset", {
+              method: "POST",
+            });
+
+            if (res.ok) {
+              const data = await res.json();
+              console.log(data.message);
+
+              // Then fetch updated nodes and scenarios as before
+              fetch("/api/nodes")
+                .then((res) => res.json())
+                .then((data) => {
+                  clearVehiclesFromMap();
+                  setScenarioSelectionEnabled(true);
+                  syncMarkersAndEdges(data);
+                });
+            } else {
+              console.error("Failed to reset");
+            }
+          } catch (err) {
+            console.error("Error calling reset:", err);
+          }
         });
     </script>
   </body>

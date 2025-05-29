@@ -216,19 +216,6 @@ footer {
   text-align: left;
 }
 
-.button2 {
-  height: 48px;
-  margin-top: auto;
-  padding: 10px 24px;
-  background-color: #d3dae6;
-  color: #211d53;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease 0s;
-  text-align: left;
-}
-
 .button-contact {
   height: 40px;
   padding: 10px 24px;
