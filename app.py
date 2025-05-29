@@ -71,7 +71,7 @@ ROUTES_DATA = {
             "ammo": 2,
             "food": 3,
             "fuel": 3,
-            "route": [[383, 605], [383, 605]],
+            "route": [[383, 605], [342, 794]],
         },
         {
             "type": "plane",
