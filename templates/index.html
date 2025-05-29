@@ -43,7 +43,7 @@
       Contested logistics
     </h1>
 
-    <!-- SELECTOR FREQ / DELAY -->
+    <!-- CONTENT SELECTION -->
     <section>
       <div class="selector">
         <div
@@ -67,7 +67,6 @@
     <section class="card-content active" id="content1">
       <div class="card" style="margin-top: 0px; border-radius: 0px 8px 8px 8px">
         <div id="live_demo_left">
-          <!-- Taking Data -->
           <div style="min-height: 250px">
             <h2 style="padding-bottom: 12px">Choose a scenario</h2>
 
@@ -126,14 +125,6 @@
             </div>
 
             <div class="buttons_div">
-              <!-- <select id="scenarioSelector">
-                <option value="option1">Scenario 1</option>
-                <option value="option2">Scenario 2</option>
-                <option value="option3">Scenario 3</option>
-              </select> -->
-              <!-- 
-              <button class="button2" id="submitBtn">Submit from JSON</button> -->
-
               <button class="button" id="animateBtn">Start simulation</button>
               <button
                 class="button2"
@@ -150,7 +141,7 @@
       </div>
     </section>
 
-    <!-- DELAY SCAN PLOT -->
+    <!-- ABOUT TAB -->
     <section class="card-content" id="content2">
       <div class="card" style="margin-top: 0px; border-radius: 0px 8px 8px 8px">
         Information about the contested logistics demo.
@@ -174,6 +165,59 @@
     <script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
 
     <script>
+      // CODE FOR SCENARIO TOGGLE
+      function setScenarioSelectionEnabled(enabled) {
+        document.querySelectorAll(".scenario").forEach((card) => {
+          if (enabled) {
+            card.style.pointerEvents = "auto";
+            card.style.opacity = "1";
+          } else {
+            card.style.pointerEvents = "none";
+            card.style.opacity = "0.6"; // visually show disabled
+          }
+        });
+      }
+
+      // Initially enabled
+      setScenarioSelectionEnabled(true);
+
+      // Update scenario click handler to do nothing if disabled:
+      document.querySelectorAll(".scenario").forEach((card) => {
+        card.addEventListener("click", async () => {
+          if (card.style.pointerEvents === "none") return; // ignore click if disabled
+
+          selectedScenario = card.dataset.scenario;
+          document
+            .querySelectorAll(".scenario")
+            .forEach((c) => c.classList.remove("selected"));
+          card.classList.add("selected");
+
+          // ... rest of your existing code ...
+        });
+      });
+
+      // Start Simulation button disables scenario selection:
+      document
+        .getElementById("animateBtn")
+        .addEventListener("click", async () => {
+          if (!selectedScenario) {
+            alert("Please select a scenario first.");
+            return;
+          }
+
+          setScenarioSelectionEnabled(false); // disable scenario selection
+
+          // ... rest of your existing code ...
+        });
+
+      // Continue button re-enables scenario selection:
+      document
+        .getElementById("continue-button")
+        .addEventListener("click", async () => {
+          // Your existing code...
+
+          setScenarioSelectionEnabled(true); // re-enable scenario selection
+        });
       // CODE FOR MAP LEAFLET
 
       var map = L.map("map", {
@@ -390,31 +434,6 @@
           document.getElementById("continue-button").disabled = false;
         });
 
-      // Continue Button
-      document
-        .getElementById("continue-button")
-        .addEventListener("click", async () => {
-          const res = await fetch("/api/new-scenarios");
-          const scenarios = await res.json();
-
-          scenarios.forEach((data, i) => {
-            const card = document.querySelectorAll(".scenario")[i];
-            card.querySelector(".ammo-count").textContent = data.ammo;
-            card.querySelector(".food-count").textContent = data.food;
-            card.querySelector(".fuel-count").textContent = data.fuel;
-            card.querySelector(".tank-count").textContent = data.tanks;
-            card.querySelector(".boat-count").textContent = data.boats;
-            card.querySelector(".plane-count").textContent = data.planes;
-            card.dataset.scenario = data.scenarioId;
-          });
-
-          selectedScenario = null;
-          document
-            .querySelectorAll(".scenario")
-            .forEach((c) => c.classList.remove("selected"));
-          document.getElementById("continue-button").disabled = true;
-        });
-
       // FUNCTION TO ANIMATE ALONG THE PATH
 
       function getPositionAtFraction(route, fraction) {
@@ -502,25 +521,83 @@
         div.classList.add("button-active");
       }
 
-      window.addEventListener("DOMContentLoaded", () => {fetch("/api/nodes")
-  .then((res) => res.json())
-  .then((data) => {
-    data.nodes.forEach((p) => {
-      L.marker(p.coords, { ...unit_type[p.type] })
-        .addTo(map)
-        .bindPopup(p.label);
-    });
+      const markers = new Map();
+      const lines = [];
 
-    data.edges.forEach((edge) => {
-      L.polyline([edge.from, edge.to], {
-        color: "white",
-        weight: 2,
-        opacity: 1,
-        dashArray: "4, 6",
-      }).addTo(map);
-    });
-  });
-});
+      function syncMarkersAndEdges(data) {
+        // Remove old markers not in data
+        for (const [label, marker] of markers.entries()) {
+          if (!data.nodes.find((p) => p.label === label)) {
+            map.removeLayer(marker);
+            markers.delete(label);
+          }
+        }
+
+        // Add new or update existing markers
+        data.nodes.forEach((p) => {
+          if (!markers.has(p.label)) {
+            const marker = L.marker(p.coords, { ...unit_type[p.type] })
+              .addTo(map)
+              .bindPopup(p.label);
+            markers.set(p.label, marker);
+          }
+        });
+
+        // Remove old lines
+        lines.forEach((line) => map.removeLayer(line));
+        lines.length = 0;
+
+        // Add new lines
+        data.edges.forEach((edge) => {
+          const line = L.polyline([edge.from, edge.to], {
+            color: "white",
+            weight: 2,
+            opacity: 1,
+            dashArray: "4, 6",
+          }).addTo(map);
+          lines.push(line);
+        });
+      }
+
+      // Run on webpage load
+      window.addEventListener("DOMContentLoaded", () => {
+        fetch("/api/nodes")
+          .then((res) => res.json())
+          .then((data) => {
+            syncMarkersAndEdges(data);
+          })
+          .catch((err) => console.error("Error fetching points:", err));
+      });
+
+      // Continue Button
+      document
+        .getElementById("continue-button")
+        .addEventListener("click", async () => {
+          fetch("/api/nodes")
+            .then((res) => res.json())
+            .then((data) => {
+              syncMarkersAndEdges(data);
+            });
+          const res = await fetch("/api/new-scenarios");
+          const scenarios = await res.json();
+
+          scenarios.forEach((data, i) => {
+            const card = document.querySelectorAll(".scenario")[i];
+            card.querySelector(".ammo-count").textContent = data.ammo;
+            card.querySelector(".food-count").textContent = data.food;
+            card.querySelector(".fuel-count").textContent = data.fuel;
+            card.querySelector(".tank-count").textContent = data.tanks;
+            card.querySelector(".boat-count").textContent = data.boats;
+            card.querySelector(".plane-count").textContent = data.planes;
+            card.dataset.scenario = data.scenarioId;
+          });
+
+          selectedScenario = null;
+          document
+            .querySelectorAll(".scenario")
+            .forEach((c) => c.classList.remove("selected"));
+          document.getElementById("continue-button").disabled = true;
+        });
     </script>
   </body>
 </html>
