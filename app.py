@@ -83,6 +83,8 @@ ROUTES_DATA = {
     ],
 }
 
+phase = 1
+
 
 # HOME PAGE
 @app.route("/")
@@ -94,6 +96,8 @@ def index():
 def reset_nodes():
     global nodes
     global ROUTES_DATA
+    global phase
+    phase = 1
     nodes = [
         {"coords": [449, 237], "type": "airstrip", "label": "Airstrip 1"},
         {"coords": [217, 733], "type": "airstrip", "label": "Airstrip 2"},
@@ -199,7 +203,10 @@ def get_points():
 def continue_scenario():
     global nodes
     global ROUTES_DATA
+    global phase
     data = request.get_json()
+    phase += 1
+    print("Current Phase: ", phase)
     selected_scenario = data.get("selectedScenario")
 
     if not selected_scenario:
@@ -408,6 +415,13 @@ def continue_scenario():
         }
 
     return jsonify({"message": f"Scenario {selected_scenario} received"}), 200
+
+
+# GET CURRENT PHASE
+@app.route("/api/phase")
+def get_phase():
+    global phase
+    return jsonify({"phase": phase})
 
 
 # DIRAC CHOOSES RECOMMENDATION

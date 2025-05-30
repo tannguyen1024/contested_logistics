@@ -69,6 +69,7 @@
         <div id="live_demo_left">
           <div style="min-height: 250px">
             <h2 style="padding-bottom: 12px">Choose a scenario</h2>
+            <h3>Current Phase: <span id="phase">1</span></h3>
 
             <div class="scenario card" data-scenario="option1">
               <h3>Scenario 1</h3>
@@ -171,6 +172,8 @@
     <script src="https://unpkg.com/leaflet-polylinedecorator@1.7.0/dist/leaflet.polylineDecorator.min.js"></script>
 
     <script>
+      phase = 1;
+
       // CODE FOR SCENARIO TOGGLE
       document.getElementById("continue-button").style.display = "none";
       function setScenarioSelectionEnabled(enabled) {
@@ -584,6 +587,17 @@
             syncMarkersAndEdges(data);
           })
           .catch((err) => console.error("Error fetching points:", err));
+        fetch("/api/phase")
+          .then((res2) => res2.json())
+          .then((data2) => {
+            const span = document.getElementById("phase");
+            if (span) {
+              span.textContent = data2.phase;
+              span.style.color = "green";
+              span.style.fontWeight = "bold";
+            }
+          })
+          .catch((err) => console.error("Error updating phase:", err));
       });
 
       document
@@ -614,18 +628,29 @@
             body: JSON.stringify({ selectedScenario: selectedScenarioId }),
           });
 
-          // Then fetch updated nodes and scenarios as before
           fetch("/api/nodes")
             .then((res) => res.json())
             .then((data) => {
               syncMarkersAndEdges(data);
             });
 
+          fetch("/api/phase")
+            .then((res2) => res2.json())
+            .then((data2) => {
+              const span = document.getElementById("phase");
+              if (span) {
+                span.textContent = data2.phase;
+                span.style.color = "green";
+                span.style.fontWeight = "bold";
+              }
+            })
+            .catch((err) => console.error("Error updating phase:", err));
+
           selectedScenario = null;
           document
             .querySelectorAll(".scenario")
             .forEach((c) => c.classList.remove("selected"));
-          // document.getElementById("continue-button").disabled = true;
+          window.location.reload();
         });
 
       // RESET BUTTON
@@ -658,6 +683,7 @@
                   clearVehiclesFromMap();
                   setScenarioSelectionEnabled(true);
                   syncMarkersAndEdges(data);
+                  window.location.reload();
                 });
             } else {
               console.error("Failed to reset");
