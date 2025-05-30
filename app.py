@@ -242,7 +242,7 @@ def continue_scenario():
             ],
             "option2": [
                 {
-                    "type": "tank",
+                    "type": "boat",
                     "ammo": 3,
                     "food": 7,
                     "fuel": 2,
@@ -358,17 +358,17 @@ def continue_scenario():
         nodes = [
             {"coords": [449, 237], "type": "airstrip", "label": "Airstrip 1"},
             {"coords": [217, 733], "type": "airstrip", "label": "Airstrip 2"},
-            {"coords": [383, 605], "type": "conflict", "label": "Conflict 1"},
             {"coords": [160, 623], "type": "port", "label": "Port 1"},
             {"coords": [235, 278], "type": "port", "label": "Port 2"},
             {"coords": [309, 238], "type": "port", "label": "Port 3"},
             {"coords": [195, 392], "type": "port", "label": "Port 4"},
             {"coords": [241, 546], "type": "rendezvous", "label": "Rendezvous 1"},
             {"coords": [269, 324], "type": "rendezvous", "label": "Rendezvous 2"},
-            # {"coords": [426, 381], "type": "conflict", "label": "Conflict 1"},
+            {"coords": [426, 381], "type": "conflict", "label": "Conflict 1"},
             {"coords": [342, 794], "type": "conflict", "label": "Conflict 2"},
             {"coords": [145, 530], "type": "conflict", "label": "Conflict 3"},
             {"coords": [160, 297], "type": "conflict", "label": "Conflict 4"},
+            {"coords": [383, 605], "type": "conflict", "label": "Conflict 5"},
         ]
         ROUTES_DATA = {
             "option1": [

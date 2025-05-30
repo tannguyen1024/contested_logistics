@@ -499,13 +499,13 @@
           }
         });
 
-        // Remove 'button-active' class from all selector divs
+        // Remove button-active class from all selector divs
         const divs = document.querySelectorAll(".selector-button");
         divs.forEach((divElement) =>
           divElement.classList.remove("button-active")
         );
 
-        // Add 'button-active' class to the clicked div
+        // Add button-active class to the clicked div
         div.classList.add("button-active");
       }
 
@@ -625,6 +625,31 @@
             console.error("Error calling reset:", err);
           }
         });
+
+      /*Legend specific*/
+      var legend = L.control({ position: "bottomright" });
+
+      legend.onAdd = function (map) {
+        var div = L.DomUtil.create("div", "legend");
+        div.innerHTML += "<h4>Legend</h4>";
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/airstrip.svg);background-repeat: no-repeat;"></i><span>Airstrip</span><br>';
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/port.svg);background-repeat: no-repeat;"></i><span>Port</span><br>';
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/rendezvous.svg);background-repeat: no-repeat;"></i><span>Rendezvous</span><br>';
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/conflict.svg);background-repeat: no-repeat;"></i><span>Conflict</span><br>';
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/tank.svg);background-repeat: no-repeat;"></i><span>Tank</span><br>';
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/plane.svg);background-repeat: no-repeat;"></i><span>Plane</span><br>';
+        div.innerHTML +=
+          '<i class="icon" style="background-image: url(static/boat.svg);background-repeat: no-repeat;"></i><span>Boat</span><br>';
+        return div;
+      };
+
+      legend.addTo(map);
     </script>
   </body>
 </html>
