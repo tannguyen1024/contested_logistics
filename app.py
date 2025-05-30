@@ -115,14 +115,14 @@ def reset_nodes():
                 "type": "tank",
                 "ammo": 2,
                 "food": 1,
-                "fuel": 1,
+                "fuel": 3,
                 "route": [[449, 237], [426, 381]],
             },
             {
                 "type": "tank",
                 "ammo": 1,
                 "food": 1,
-                "fuel": 3,
+                "fuel": 4,
                 "route": [[449, 237], [309, 238]],
             },
         ],
@@ -130,7 +130,7 @@ def reset_nodes():
             {
                 "type": "boat",
                 "ammo": 3,
-                "food": 7,
+                "food": 1,
                 "fuel": 2,
                 "route": [[235, 278], [269, 324]],
             },
@@ -235,8 +235,8 @@ def continue_scenario():
                 {
                     "type": "tank",
                     "ammo": 1,
-                    "food": 1,
-                    "fuel": 3,
+                    "food": 2,
+                    "fuel": 1,
                     "route": [[383, 605], [342, 794]],
                 },
             ],
@@ -245,7 +245,7 @@ def continue_scenario():
                     "type": "boat",
                     "ammo": 3,
                     "food": 7,
-                    "fuel": 2,
+                    "fuel": 3,
                     "route": [[309, 238], [235, 278]],
                 },
                 {
@@ -259,21 +259,21 @@ def continue_scenario():
             "option3": [
                 {
                     "type": "tank",
-                    "ammo": 2,
-                    "food": 3,
+                    "ammo": 4,
+                    "food": 1,
                     "fuel": 3,
                     "route": [[217, 733], [342, 794]],
                 },
                 {
                     "type": "boat",
-                    "ammo": 3,
+                    "ammo": 2,
                     "food": 2,
                     "fuel": 1,
                     "route": [[217, 733], [241, 546]],
                 },
                 {
                     "type": "plane",
-                    "ammo": 3,
+                    "ammo": 1,
                     "food": 2,
                     "fuel": 2,
                     "route": [[449, 237], [269, 324]],
@@ -301,7 +301,7 @@ def continue_scenario():
             "option1": [
                 {
                     "type": "plane",
-                    "ammo": 2,
+                    "ammo": 3,
                     "food": 1,
                     "fuel": 1,
                     "route": [[241, 546], [145, 530]],
@@ -318,7 +318,7 @@ def continue_scenario():
                 {
                     "type": "tank",
                     "ammo": 3,
-                    "food": 7,
+                    "food": 4,
                     "fuel": 2,
                     "route": [[309, 238], [235, 278]],
                 },
@@ -341,13 +341,13 @@ def continue_scenario():
                 {
                     "type": "boat",
                     "ammo": 3,
-                    "food": 2,
+                    "food": 1,
                     "fuel": 1,
                     "route": [[217, 733], [241, 546]],
                 },
                 {
                     "type": "plane",
-                    "ammo": 3,
+                    "ammo": 6,
                     "food": 2,
                     "fuel": 2,
                     "route": [[449, 237], [269, 324]],
@@ -423,7 +423,7 @@ def get_recommended_option():
     for option, routes in ROUTES_DATA.items():
         total_fuel = sum(r["fuel"] for r in routes)
         totals[option] = total_fuel
-    recommended = min(totals, key=totals.get)
+    recommended = max(totals, key=totals.get)
     return recommended
 
 

@@ -71,7 +71,7 @@
             <h2 style="padding-bottom: 12px">Choose a scenario</h2>
 
             <div class="scenario card" data-scenario="option1">
-              <h3>Scenario 1</h3>
+              <h3>Scenario 1 <span id="rec_option1"></span></h3>
               <div>
                 <div class="ammo">Ammo: <span class="ammo-count">-</span></div>
                 <div class="food">Food: <span class="food-count">-</span></div>
@@ -89,7 +89,7 @@
             </div>
 
             <div class="scenario card" data-scenario="option2">
-              <h3>Scenario 2</h3>
+              <h3>Scenario 2 <span id="rec_option2"></span></h3>
               <div>
                 <div class="ammo">Ammo: <span class="ammo-count">-</span></div>
                 <div class="food">Food: <span class="food-count">-</span></div>
@@ -107,7 +107,7 @@
             </div>
 
             <div class="scenario card" data-scenario="option3">
-              <h3>Scenario 3</h3>
+              <h3>Scenario 3 <span id="rec_option3"></span></h3>
               <div>
                 <div class="ammo">Ammo: <span class="ammo-count">-</span></div>
                 <div class="food">Food: <span class="food-count">-</span></div>
@@ -170,7 +170,6 @@
     <script>
       // CODE FOR SCENARIO TOGGLE
       document.getElementById("continue-button").style.display = "none";
-
       function setScenarioSelectionEnabled(enabled) {
         document.querySelectorAll(".scenario").forEach((card) => {
           if (enabled) {
@@ -178,13 +177,14 @@
             card.style.opacity = "1";
           } else {
             card.style.pointerEvents = "none";
-            card.style.opacity = "0.6";
+            card.style.opacity = "0.5";
           }
         });
       }
 
       setScenarioSelectionEnabled(true);
 
+      // CLICK SCENARIO
       document.querySelectorAll(".scenario").forEach((card) => {
         card.addEventListener("click", async () => {
           if (card.style.pointerEvents === "none") return;
@@ -197,6 +197,7 @@
         });
       });
 
+      // CLICK RUN SIMULATION
       document
         .getElementById("animateBtn")
         .addEventListener("click", async () => {
@@ -220,7 +221,6 @@
         });
 
       // CODE FOR MAP LEAFLET
-
       var map = L.map("map", {
         crs: L.CRS.Simple,
         attributionControl: false,
@@ -326,6 +326,8 @@
       // VEHICLES ON ROUTES
       const vehicleMarkers = []; // clear this when loading new data
       let selectedScenario = null;
+
+      // CLICK SCENARIO
       document.querySelectorAll(".scenario").forEach((card) => {
         card.addEventListener("click", async () => {
           selectedScenario = card.dataset.scenario;
@@ -336,6 +338,30 @@
           card.classList.add("selected");
 
           const scenario = card.dataset.scenario;
+          const rec = await fetch(`/api/recommendation`);
+          const recommended = await rec.json();
+          if (recommended.recommended === "option1") {
+            const span = document.getElementById("rec_option1");
+            if (span) {
+              span.textContent = "Dirac-3's Choice";
+              span.style.color = "green";
+              span.style.fontWeight = "bold";
+            }
+          } else if (recommended.recommended === "option2") {
+            const span = document.getElementById("rec_option2");
+            if (span) {
+              span.textContent = "Dirac-3's Choice";
+              span.style.color = "green";
+              span.style.fontWeight = "bold";
+            }
+          } else if (recommended.recommended === "option3") {
+            const span = document.getElementById("rec_option3");
+            if (span) {
+              span.textContent = "Dirac-3's Choice";
+              span.style.color = "green";
+              span.style.fontWeight = "bold";
+            }
+          }
           const res = await fetch(`/api/routes?scenario=${scenario}`);
           const vehicles = await res.json();
           let ammo = 0;
@@ -562,6 +588,10 @@
         .addEventListener("click", async () => {
           document.getElementById("animateBtn").style.display = "inline-block";
           document.getElementById("continue-button").style.display = "none";
+          ["rec_option1", "rec_option2", "rec_option3"].forEach((id) => {
+            const span = document.getElementById(id);
+            if (span) span.textContent = "";
+          });
           setScenarioSelectionEnabled(true);
           clearVehiclesFromMap();
 
@@ -599,8 +629,16 @@
       document
         .getElementById("reset-button")
         .addEventListener("click", async () => {
+          selectedScenario = null;
+          document
+            .querySelectorAll(".scenario")
+            .forEach((c) => c.classList.remove("selected"));
           document.getElementById("animateBtn").style.display = "inline-block";
           document.getElementById("continue-button").style.display = "none";
+          ["rec_option1", "rec_option2", "rec_option3"].forEach((id) => {
+            const span = document.getElementById(id);
+            if (span) span.textContent = "";
+          });
           try {
             const res = await fetch("/api/reset", {
               method: "POST",
