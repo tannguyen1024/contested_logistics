@@ -253,7 +253,7 @@ def continue_scenario():
                     "ammo": 1,
                     "food": 3,
                     "fuel": 1,
-                    "route": [[269, 324], [145, 530]],
+                    "route": [[309, 238], [269, 324]],
                 },
             ],
             "option3": [
@@ -262,7 +262,7 @@ def continue_scenario():
                     "ammo": 2,
                     "food": 3,
                     "fuel": 3,
-                    "route": [[217, 733], [426, 381]],
+                    "route": [[217, 733], [342, 794]],
                 },
                 {
                     "type": "boat",
@@ -300,11 +300,11 @@ def continue_scenario():
         ROUTES_DATA = {
             "option1": [
                 {
-                    "type": "tank",
+                    "type": "plane",
                     "ammo": 2,
                     "food": 1,
                     "fuel": 1,
-                    "route": [[309, 238], [195, 392]],
+                    "route": [[241, 546], [145, 530]],
                 },
                 {
                     "type": "tank",
@@ -323,11 +323,11 @@ def continue_scenario():
                     "route": [[309, 238], [235, 278]],
                 },
                 {
-                    "type": "boat",
+                    "type": "plane",
                     "ammo": 1,
                     "food": 3,
                     "fuel": 1,
-                    "route": [[269, 324], [145, 530]],
+                    "route": [[449, 237], [375, 125]],
                 },
             ],
             "option3": [
@@ -378,23 +378,9 @@ def continue_scenario():
                     "food": 1,
                     "fuel": 1,
                     "route": [[309, 238], [195, 392]],
-                },
-                {
-                    "type": "tank",
-                    "ammo": 1,
-                    "food": 1,
-                    "fuel": 3,
-                    "route": [[383, 605], [342, 794]],
-                },
+                }
             ],
             "option2": [
-                {
-                    "type": "plane",
-                    "ammo": 3,
-                    "food": 7,
-                    "fuel": 2,
-                    "route": [[241, 546], [426, 381]],
-                },
                 {
                     "type": "boat",
                     "ammo": 1,
@@ -404,13 +390,6 @@ def continue_scenario():
                 },
             ],
             "option3": [
-                {
-                    "type": "tank",
-                    "ammo": 2,
-                    "food": 3,
-                    "fuel": 3,
-                    "route": [[217, 733], [426, 381]],
-                },
                 {
                     "type": "boat",
                     "ammo": 3,

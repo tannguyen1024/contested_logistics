@@ -216,7 +216,7 @@
             }
           });
           const result = await res.json();
-          document.getElementById("continue-button").disabled = false;
+          // document.getElementById("continue-button").disabled = false;
         });
 
       // CODE FOR MAP LEAFLET
@@ -292,7 +292,7 @@
       var boat = {
         icon: L.icon({
           iconUrl: "/static/boat.svg",
-          iconSize: [46, 13],
+          iconSize: [30, 13],
         }),
         title: "boat",
       };
@@ -592,7 +592,7 @@
           document
             .querySelectorAll(".scenario")
             .forEach((c) => c.classList.remove("selected"));
-          document.getElementById("continue-button").disabled = true;
+          // document.getElementById("continue-button").disabled = true;
         });
 
       // RESET BUTTON
